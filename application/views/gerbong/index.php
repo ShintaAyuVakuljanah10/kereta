@@ -1,4 +1,9 @@
 <h2>Data Gerbong</h2>
+<a href="<?php echo site_url('tiket'); ?>">tiket</a>
+<a href="<?php echo site_url('penumpang'); ?>">penumpang</a>
+<a href="<?php echo site_url('pemesanan'); ?>">pemesanan</a>
+<a href="<?php echo site_url('kereta'); ?>">kereta</a>
+<a href="<?php echo site_url('user'); ?>">user</a><br>
 <a href="<?php echo base_url('gerbong/add'); ?>">Tambah Gerbong</a>
 <table border="1" cellpadding="8">
     <tr>

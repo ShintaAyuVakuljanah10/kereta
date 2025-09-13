@@ -1,4 +1,9 @@
 <h2>Data Pemesanan</h2>
+<a href="<?php echo site_url('tiket'); ?>">tiket</a>
+<a href="<?php echo site_url('penumpang'); ?>">penumpang</a>
+<a href="<?php echo site_url('user'); ?>">user</a>
+<a href="<?php echo site_url('kereta'); ?>">kereta</a>
+<a href="<?php echo site_url('gerbong'); ?>">gerbong</a><br>
 <a href="<?php echo site_url('pemesanan/add'); ?>">Tambah Pemesanan</a>
 <table border="1" cellpadding="8">
     <tr>
