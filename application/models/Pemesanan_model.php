@@ -12,6 +12,17 @@ class Pemesanan_model extends CI_Model {
         return $this->db->get_where($this->table, ["id_pemesanan" => $id])->row();
     }
 
+    public function getDetail($id) {
+        $this->db->select('p.*, t.*, k.nama AS nama_kereta, g.no_gerbong, pen.nama');
+        $this->db->from('pemesanan p');
+        $this->db->join('tiket t', 'p.id_tiket = t.id_tiket', 'left');
+        $this->db->join('kereta k', 't.id_kereta = k.id_kereta', 'left'); 
+        $this->db->join('gerbong g', 'p.id_gerbong = g.id_gerbong', 'left');
+        $this->db->join('penumpang pen', 'p.id_penumpang = pen.id_penumpang', 'left');
+        $this->db->where('p.id_pemesanan', $id);
+        return $this->db->get()->row();
+    }
+    
     public function insert($data) {
         $this->db->insert('pemesanan', $data);
         return $this->db->insert_id();
@@ -23,11 +34,7 @@ class Pemesanan_model extends CI_Model {
     }    
     
     public function updatePenumpangPemesanan($id_pemesanan, $id_penumpang) {
-        // Kalau kamu punya tabel relasi, insert di situ
-        $this->db->insert('pemesanan_penumpang', [
-            'id_pemesanan' => $id_pemesanan,
-            'id_penumpang' => $id_penumpang
-        ]);
+         // Tidak digunakan karena tidak ada tabel relasi
     }    
 
     public function update($id, $data) {
