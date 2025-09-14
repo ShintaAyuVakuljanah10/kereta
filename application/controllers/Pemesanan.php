@@ -8,6 +8,7 @@ class Pemesanan extends CI_Controller {
         $this->load->model("Kereta_model");
         $this->load->model("User_model");  
         $this->load->library('session'); 
+        $this->load->model('Gerbong_model'); 
     }
 
     public function index(){
@@ -19,7 +20,6 @@ class Pemesanan extends CI_Controller {
         if ($this->input->post()) {
             $penumpang_list = $this->input->post('penumpang');
     
-            // Ambil user yang login (misal berdasarkan session)
             $id_user = null;
             $user_session_id = $this->session->userdata('id_user');
             if ($user_session_id) {
@@ -33,30 +33,31 @@ class Pemesanan extends CI_Controller {
                 show_error("User belum login atau tidak ditemukan.", 401);
             }
     
-            // Validasi minimal 1 penumpang
             if (empty($penumpang_list) || !is_array($penumpang_list)) {
                 show_error("Data penumpang belum diisi.", 400);
             }
     
-            // Simpan semua penumpang, tambahkan id_user dari model user
             $id_penumpang_utama = null;
             $id_penumpang_list = [];
     
+            $firstKey = array_key_first($penumpang_list);
+    
             foreach ($penumpang_list as $index => $p) {
-                $p['id_user'] = $id_user;  // set id_user dari model User_model
+                $p['id_user'] = $id_user;
     
                 $id_penumpang = $this->Pemesanan_model->insertPenumpang($p);
     
-                if ($index === 0) {
+                if ($index === $firstKey) {
                     $id_penumpang_utama = $id_penumpang;
                 }
     
                 $id_penumpang_list[] = $id_penumpang;
-            }
+            }            
     
             // Simpan data pemesanan
             $data_pemesanan = [
                 'id_tiket'      => $this->input->post('id_kereta'),
+                'id_gerbong'    => $this->input->post('id_gerbong'),
                 'id_penumpang'  => $id_penumpang_utama,
                 'jml_penumpang' => count($id_penumpang_list),
                 'total_harga'   => $this->input->post('total_harga'),
@@ -77,10 +78,10 @@ class Pemesanan extends CI_Controller {
         $data['asal']   = $this->Kereta_model->getAsal();
         $data['tujuan'] = $this->Kereta_model->getTujuan();
         $data['tiket']  = $this->Kereta_model->getAllWithHarga();
-    
+        $data['gerbong'] = $this->Gerbong_model->getAll();
+
         $this->load->view('pemesanan/add', $data);
-    }
-    
+    }   
 
     public function transaksi($id_pemesanan) {
         $data['pemesanan'] = $this->Pemesanan_model->getDetail($id_pemesanan);

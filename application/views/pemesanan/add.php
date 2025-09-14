@@ -30,6 +30,15 @@
 	</select>
 	<br><br>
 
+	Gerbong:
+	<select name="id_gerbong" required>
+		<option value="">-- Pilih Gerbong --</option>
+		<?php foreach($gerbong as $g): ?>
+		<option value="<?= $g->id_gerbong ?>"><?= $g->no_gerbong ?></option>
+		<?php endforeach; ?>
+	</select>
+	<br><br>
+
 	<!-- Jumlah Penumpang -->
 	Jumlah Penumpang:
 	<input type="number" name="jml_penumpang" id="jml_penumpang" min="1" required>
@@ -56,13 +65,11 @@
 <script>
 	let hargaTiket = 0;
 
-	// ambil harga tiket dari option kereta
 	document.getElementById('kereta').addEventListener('change', function () {
 		hargaTiket = parseInt(this.options[this.selectedIndex].getAttribute('data-harga')) || 0;
 		hitungTotal();
 	});
 
-	// generate form penumpang sesuai jumlah
 	document.getElementById('jml_penumpang').addEventListener('input', function () {
 		let jumlah = parseInt(this.value) || 0;
 		let container = document.getElementById('form_penumpang');

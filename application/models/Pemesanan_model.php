@@ -20,7 +20,7 @@ class Pemesanan_model extends CI_Model {
     public function insertPenumpang($data) {
         $this->db->insert('penumpang', $data);
         return $this->db->insert_id();
-    }
+    }    
     
     public function updatePenumpangPemesanan($id_pemesanan, $id_penumpang) {
         // Kalau kamu punya tabel relasi, insert di situ
