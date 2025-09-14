@@ -5,6 +5,9 @@ class Pemesanan extends CI_Controller {
     public function __construct(){
         parent::__construct();
         $this->load->model("Pemesanan_model");
+        $this->load->model("Kereta_model");
+        $this->load->model("User_model");  
+        $this->load->library('session'); 
     }
 
     public function index(){
@@ -13,38 +16,102 @@ class Pemesanan extends CI_Controller {
     }
 
     public function add() {
-        if($this->input->post()){
-            $data = $this->input->post();
-            $data['status'] = 'Lunas'; // langsung bayar
-            $this->db->insert('pemesanan', $data);
+        if ($this->input->post()) {
+            $penumpang_list = $this->input->post('penumpang');
     
-            $id = $this->db->insert_id();
+            // Ambil user yang login (misal berdasarkan session)
+            $id_user = null;
+            $user_session_id = $this->session->userdata('id_user');
+            if ($user_session_id) {
+                $user = $this->User_model->getById($user_session_id);
+                if ($user) {
+                    $id_user = $user->id_user;
+                }
+            }
     
-            // Generate QR Code (misal isi QR = link tiket)
-            $this->load->library('ciqrcode'); // library CI QR Code
-            $params['data'] = site_url('pemesanan/tiket/'.$id);
-            $params['level'] = 'H';
-            $params['size'] = 5;
-            $params['savename'] = FCPATH.'uploads/qr_'.$id.'.png';
-            $this->ciqrcode->generate($params);
+            if (!$id_user) {
+                show_error("User belum login atau tidak ditemukan.", 401);
+            }
     
-            // Simpan nama file QR di db
-            $this->db->where('id_pemesanan',$id)->update('pemesanan',['qr_code'=>'uploads/qr_'.$id.'.png']);
+            // Validasi minimal 1 penumpang
+            if (empty($penumpang_list) || !is_array($penumpang_list)) {
+                show_error("Data penumpang belum diisi.", 400);
+            }
     
-            redirect('pemesanan/qr/'.$id);
+            // Simpan semua penumpang, tambahkan id_user dari model user
+            $id_penumpang_utama = null;
+            $id_penumpang_list = [];
+    
+            foreach ($penumpang_list as $index => $p) {
+                $p['id_user'] = $id_user;  // set id_user dari model User_model
+    
+                $id_penumpang = $this->Pemesanan_model->insertPenumpang($p);
+    
+                if ($index === 0) {
+                    $id_penumpang_utama = $id_penumpang;
+                }
+    
+                $id_penumpang_list[] = $id_penumpang;
+            }
+    
+            // Simpan data pemesanan
+            $data_pemesanan = [
+                'id_tiket'      => $this->input->post('id_kereta'),
+                'id_penumpang'  => $id_penumpang_utama,
+                'jml_penumpang' => count($id_penumpang_list),
+                'total_harga'   => $this->input->post('total_harga'),
+                'status'        => 'pending'
+            ];
+    
+            $id_pemesanan = $this->Pemesanan_model->insert($data_pemesanan);
+    
+            // Simpan relasi semua penumpang ke pemesanan
+            foreach ($id_penumpang_list as $id_p) {
+                $this->Pemesanan_model->updatePenumpangPemesanan($id_pemesanan, $id_p);
+            }
+    
+            redirect('pemesanan/transaksi/' . $id_pemesanan);
         }
-        $this->load->view('pemesanan/add');
+    
+        // Data untuk form
+        $data['asal']   = $this->Kereta_model->getAsal();
+        $data['tujuan'] = $this->Kereta_model->getTujuan();
+        $data['tiket']  = $this->Kereta_model->getAllWithHarga();
+    
+        $this->load->view('pemesanan/add', $data);
     }
     
-    public function qr($id){
-        $data['item'] = $this->db->get_where('pemesanan',['id_pemesanan'=>$id])->row();
-        $this->load->view('pemesanan/qr', $data);
-    }    
+
+    public function transaksi($id_pemesanan) {
+        $data['pemesanan'] = $this->Pemesanan_model->getDetail($id_pemesanan);
+        $this->load->view('pemesanan/transaksi', $data);
+    }
+
+    public function bayar() {
+        $id_pemesanan = $this->input->post('id_pemesanan');
+        $metode = $this->input->post('metode');
+
+        $kode_tiket = strtoupper(uniqid("TK-"));
+
+        $this->db->where('id_pemesanan', $id_pemesanan)
+                 ->update('pemesanan', [
+                     'status'            => 'lunas',
+                     'metode_pembayaran' => $metode,
+                     'kode_tiket'        => $kode_tiket
+                 ]);
+
+        redirect('pemesanan/tiket/'.$id_pemesanan);
+    }
+
+    public function tiket($id_pemesanan) {
+        $data['pemesanan'] = $this->Pemesanan_model->getDetail($id_pemesanan);
+        $this->load->view('pemesanan/tiket', $data);
+    }
 
     public function edit($id){
         if($this->input->post()){
             $data = [
-                "id_tiket" => $this->input->post("id_tiket"),
+                "id_kereta" => $this->input->post("id_kereta"),
                 "id_penumpang" => $this->input->post("id_penumpang"),
                 "id_gerbong" => $this->input->post("id_gerbong"),
                 "jml_penumpang" => $this->input->post("jml_penumpang"),
