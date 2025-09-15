@@ -13,6 +13,7 @@ class Gerbong extends CI_Controller {
     }
 
     public function add(){
+        $data = [];
         if($this->input->post()){
             $data = [
                 "id_kereta" => $this->input->post("id_kereta"),
