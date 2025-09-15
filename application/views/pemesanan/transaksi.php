@@ -1,18 +1,14 @@
-<h2>Transaksi Pembayaran</h2>
-<form method="post" action="<?= site_url('pemesanan/bayar') ?>">
+<h3>Total Bayar: Rp <?= number_format($pemesanan->total_harga,0,',','.') ?></h3>
+
+<form action="<?= site_url('pemesanan/bayar') ?>" method="post">
     <input type="hidden" name="id_pemesanan" value="<?= $pemesanan->id_pemesanan ?>">
-
-    <p><b>ID Tiket:</b> <?= $pemesanan->id_tiket ?></p>
-    <p><b>Tujuan:</b> <?= $pemesanan->id_tiket ?></p>
-    <p><b>Total Harga:</b> Rp <?= number_format($pemesanan->total_harga) ?></p>
-
-    <h4>Pilih Metode Pembayaran:</h4>
-    <label><input type="radio" name="metode" value="DANA"> DANA</label>
-    <label><input type="radio" name="metode" value="BRI"> BRI</label>
-    <label><input type="radio" name="metode" value="BNI"> BNI</label>
-    <label><input type="radio" name="metode" value="Mandiri"> Mandiri</label>
-    <label><input type="radio" name="metode" value="GoPay"> GoPay</label>
-
-    <br><br>
-    <button type="submit">Konfirmasi Bayar</button>
+    
+    <label>Pilih Metode Pembayaran</label>
+    <select name="metode" required>
+        <option value="transfer">Transfer Bank</option>
+        <option value="qris">QRIS</option>
+        <option value="cash">Cash</option>
+    </select>
+    
+    <button type="submit">Bayar & Dapatkan Tiket</button>
 </form>

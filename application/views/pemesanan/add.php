@@ -1,5 +1,7 @@
 <h2>Pemesanan Tiket</h2>
 <form method="post" action="<?= site_url('pemesanan/add'); ?>">
+	<!-- <input type="hidden" name="id_tiket" value="<?= $tiket['id_tiket'] ?>"> -->
+
 
 	Asal:
 	<select name="asal" id="asal" required>

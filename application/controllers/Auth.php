@@ -2,58 +2,52 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Auth extends CI_Controller {
+
     public function __construct(){
         parent::__construct();
-        $this->load->model("User_model");
+        $this->load->model('User_model');
         $this->load->library('session');
-    }
-
-    public function index(){
-        redirect("auth/login");
+        $this->load->helper('url');
     }
 
     public function login(){
-        if ($this->input->post()) {
-            $username = $this->input->post("username");
-            $password = $this->input->post("password");
+        // Jika form disubmit
+        if($this->input->post()){
+            $username = $this->input->post('username', TRUE);
+            $password = $this->input->post('password', TRUE);
 
             $user = $this->User_model->getByUsername($username);
 
-            if ($user && $user['password'] === $password) { 
+            // BANDingkan langsung (plain text). GANTI password_verify ke == 
+            if($user && $password === $user->password){
+                // set session
                 $this->session->set_userdata([
-                    "id_user" => $user['id_user'],
-                    "username" => $user['username'],
-                    "role" => $user['role'],
-                    "logged_in" => true
+                    'id_user'   => $user->id_user,
+                    'username'  => $user->username,
+                    'role'      => $user->role,
+                    'no_hp'     => $user->no_hp,
+                    'logged_in' => TRUE
                 ]);
-                redirect("user"); 
+
+                // redirect berdasarkan role
+                if($user->role == 'admin'){
+                    redirect('user');
+                } elseif($user->role == 'petugas'){
+                    redirect('kereta');
+                } else {
+                    redirect('pemesanan');
+                }
             } else {
-                $this->session->set_flashdata("error", "Username atau password salah!");
-                redirect("auth/login");
+                $this->session->set_flashdata('error', 'Username atau Password salah!');
+                redirect('auth/login');
             }
+        } else {
+            $this->load->view('auth/login');
         }
-
-        $this->load->view("auth/login");
-    }
-
-    public function register(){
-        if ($this->input->post()) {
-            $data = [
-                "username" => $this->input->post("username"),
-                "password" => $this->input->post("password"), // Gunakan password_hash jika perlu
-                "role" => 'user', // default role
-                "no_hp" => $this->input->post("no_hp")
-            ];
-            $this->User_model->insert($data);
-            $this->session->set_flashdata("success", "Registrasi berhasil. Silakan login.");
-            redirect("auth/login");
-        }
-
-        $this->load->view("auth/register");
     }
 
     public function logout(){
         $this->session->sess_destroy();
-        redirect("auth/login");
+        redirect('auth/login');
     }
 }

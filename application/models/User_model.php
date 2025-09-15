@@ -13,7 +13,7 @@ class User_model extends CI_Model {
     }
 
     public function getByUsername($username){
-        return $this->db->get_where("user", ["username" => $username])->row_array();
+        return $this->db->get_where("user", ["username" => $username])->row();
     }    
 
     public function insert($data) {
