@@ -94,7 +94,6 @@ class Pemesanan extends CI_Controller {
 		$id_pemesanan = $this->input->post('id_pemesanan');
 		$metode = $this->input->post('metode');
 
-		// Generate kode tiket pas bayar
 		$kode_tiket = 'TK-' . date('YmdHis') . '-' . strtoupper(substr($metode,0,3));
 
 		$this->db->where('id_pemesanan', $id_pemesanan)->update('pemesanan', [
