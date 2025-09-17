@@ -13,27 +13,19 @@ class Kereta_model extends CI_Model {
     }
 
     public function getAsal() {
-        return $this->db->select('titik_awal')
-                        ->distinct()
-                        ->get('kereta')
-                        ->result();
+        return $this->db->select('titik_awal')->distinct()->get('kereta')->result();
     }
 
     public function getTujuan() {
-        return $this->db->select('titik_akhir')
-                        ->distinct()
-                        ->get('kereta')
-                        ->result();
+        return $this->db->select('titik_akhir')->distinct()->get('kereta')->result();
     }
 
     public function getAllWithHarga() {
-        return $this->db->select('tiket.id_tiket, kereta.id_kereta, kereta.nama, kereta.titik_awal, kereta.titik_akhir, tiket.harga')
-                        ->from('tiket')
-                        ->join('kereta', 'kereta.id_kereta = tiket.id_kereta')
-                        ->get()
-                        ->result();
+        $this->db->select('tiket.id_tiket, tiket.id_kereta, tiket.harga, kereta.nama');
+        $this->db->from('tiket');
+        $this->db->join('kereta', 'kereta.id_kereta = tiket.id_kereta');
+        return $this->db->get()->result();
     }
-    
 
     public function insert($data) {
         return $this->db->insert($this->table, $data);

@@ -13,6 +13,7 @@ class Pemesanan_model extends CI_Model {
     }
 
     public function getDetail($id) {
+        $this->db->select('*');
         $this->db->select('p.*, t.*, k.nama AS nama_kereta, g.no_gerbong, pen.nama');
         $this->db->from('pemesanan p');
         $this->db->join('tiket t', 'p.id_tiket = t.id_tiket', 'left');

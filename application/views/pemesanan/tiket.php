@@ -8,7 +8,13 @@
 <p><b>Status:</b> <?= $pemesanan->status; ?></p>
 
 <hr>
-<h3>Kode Tiket Anda:</h3>
-<div style="font-size:24px; font-weight:bold; color:green;">
-    <?= $pemesanan->kode_tiket; ?>
-</div>
+<?php if ($pemesanan->status === 'lunas'): ?>
+    <hr>
+    <h3>Kode Tiket Anda:</h3>
+    <div style="font-size:24px; font-weight:bold; color:green;">
+        <?= $pemesanan->kode_tiket; ?>
+    </div>
+<?php else: ?>
+    <p style="color:red;"><b>Silakan lakukan pembayaran terlebih dahulu untuk mendapatkan kode tiket.</b></p>
+<?php endif; ?>
+    

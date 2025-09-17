@@ -1,14 +1,21 @@
-<h3>Total Bayar: Rp <?= number_format($pemesanan->total_harga,0,',','.') ?></h3>
+<h2>Transaksi Pembayaran</h2>
 
-<form action="<?= site_url('pemesanan/bayar') ?>" method="post">
-    <input type="hidden" name="id_pemesanan" value="<?= $pemesanan->id_pemesanan ?>">
-    
-    <label>Pilih Metode Pembayaran</label>
-    <select name="metode" required>
-        <option value="transfer">Transfer Bank</option>
-        <option value="qris">QRIS</option>
-        <option value="cash">Cash</option>
-    </select>
-    
-    <button type="submit">Bayar & Dapatkan Tiket</button>
-</form>
+<p><strong>ID Pemesanan:</strong> <?= $pemesanan->id_pemesanan; ?></p>
+<p><strong>Status:</strong> <?= $pemesanan->status; ?></p>
+
+<?php if ($pemesanan->status !== 'lunas'): ?>
+    <form method="post" action="<?= site_url('pemesanan/bayar'); ?>">
+        <input type="hidden" name="id_pemesanan" value="<?= $pemesanan->id_pemesanan; ?>">
+
+        <label>Metode Pembayaran:</label>
+        <select name="metode" required>
+            <option value="Transfer">Transfer</option>
+            <option value="QRIS">QRIS</option>
+            <option value="Cash">Cash</option>
+        </select>
+        <br><br>
+        <button type="submit">Bayar Sekarang</button>
+    </form>
+<?php else: ?>
+    <p style="color: green;">Pembayaran sudah dilakukan. <a href="<?= site_url('pemesanan/tiket/'.$pemesanan->id_pemesanan); ?>">Lihat Tiket</a></p>
+<?php endif; ?>

@@ -49,36 +49,37 @@ class Pemesanan extends CI_Controller {
 			}
 
 			// Ambil data inputan
-			$id_tiket   = $this->input->post('id_tiket');
-			$id_gerbong = $this->input->post('id_gerbong');
-			$total_harga = $this->input->post('total_harga');
+			$id_gerbong   = $this->input->post('id_gerbong');
+			$id_tiket     = $this->input->post('id_tiket');
+			$total_harga  = $this->input->post('total_harga');
 
 			// Buat kode_tiket otomatis
-			$kode_tiket = 'TK-' . date('YmdHi') . '-' . $id_tiket . '-' . $id_gerbong;
+			$kode_tiket = 'TK-' . date('YmdHi') .  '-' . $id_gerbong;
 
 			// Siapkan data pemesanan
 			$data_pemesanan = [
-				'id_tiket'      => $id_tiket,
 				'id_gerbong'    => $id_gerbong,
+				'id_tiket'      => $id_tiket,
 				'id_penumpang'  => $id_penumpang_utama,
 				'jml_penumpang' => count($id_penumpang_list),
 				'total_harga'   => $total_harga,
 				'status'        => 'pending',
-				'kode_tiket'    => null // tiket belum dibuat
+				'kode_tiket'    => $kode_tiket
 			];
+			
 
 			// Simpan pemesanan
 			$id_pemesanan = $this->Pemesanan_model->insert($data_pemesanan);
 
-			// Setelah simpan, redirect ke halaman transaksi (pilih metode bayar)
-			redirect('pemesanan/transaksi/'.$id_pemesanan,$kode_tiket);
-
+			// Redirect ke transaksi
+			redirect('pemesanan/transaksi/'.$id_pemesanan);
 		}
 
 		// Data untuk form
 		$data['asal']   = $this->Kereta_model->getAsal();
 		$data['tujuan'] = $this->Kereta_model->getTujuan();
-		$data['tiket']  = $this->Kereta_model->getAllWithHarga();
+		$data['tiket']  = $this->Kereta_model->getAllWithHarga(); 
+		$data['id_tiket'] = $this->input->get('id_tiket');
 		$data['gerbong']= $this->Gerbong_model->getAll();
 
 		$this->load->view('pemesanan/add', $data);
@@ -105,7 +106,6 @@ class Pemesanan extends CI_Controller {
 		// Redirect ke tiket
 		redirect('pemesanan/tiket/'.$id_pemesanan);
 	}
-
 
 	public function tiket($id_pemesanan) {
 		$data['pemesanan'] = $this->Pemesanan_model->getDetail($id_pemesanan);

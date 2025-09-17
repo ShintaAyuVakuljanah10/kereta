@@ -22,11 +22,11 @@
 	<br><br>
 
 	Pilih Kereta:
-	<select name="id_kereta" id="kereta" required>
+	<select name="id_tiket" id="kereta" required>
 		<option value="">-- Pilih Kereta --</option>
 		<?php foreach($tiket as $t): ?>
-		<option value="<?= $t->id_kereta ?>" data-harga="<?= $t->harga ?>">
-			<?= $t->nama ?> - Rp<?= number_format($t->harga,0,',','.') ?>
+		<option value="<?= $t->id_tiket ?>" data-harga="<?= $t->harga ?>" data-nama="<?= $t->nama ?>">
+			<?= $t->nama ?> (Rp<?= number_format($t->harga, 0, ',', '.') ?>)
 		</option>
 		<?php endforeach; ?>
 	</select>
