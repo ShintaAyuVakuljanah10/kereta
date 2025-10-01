@@ -3,7 +3,8 @@
 <a href="<?php echo site_url('penumpang'); ?>">penumpang</a>
 <a href="<?php echo site_url('pemesanan'); ?>">pemesanan</a>
 <a href="<?php echo site_url('kereta'); ?>">kereta</a>
-<a href="<?php echo site_url('gerbong'); ?>">gerbong</a><br>
+<a href="<?php echo site_url('gerbong'); ?>">gerbong</a>
+<a href="<?php echo site_url('laporan'); ?>">laporan</a><br>
 <a href="<?php echo site_url('user/add'); ?>">Tambah User</a>
 <table border="1" cellpadding="8">
     <tr>

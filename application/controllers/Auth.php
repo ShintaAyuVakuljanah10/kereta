@@ -31,7 +31,7 @@ class Auth extends CI_Controller {
 
                 // redirect berdasarkan role
                 if($user->role == 'admin'){
-                    redirect('user');
+                    redirect('dashboard');
                 } elseif($user->role == 'petugas'){
                     redirect('kereta');
                 } else {

@@ -1,49 +1,63 @@
-<?php
+<?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Pemesanan_model extends CI_Model {
-    private $table = "pemesanan";
+	private $table="pemesanan";
 
-    public function getAll() {
-        return $this->db->get($this->table)->result();
-    }
+	public function getAll() {
+		return $this ->db ->get($this -> table) ->result();
+	}
 
-    public function getById($id) {
-        return $this->db->get_where($this->table, ["id_pemesanan" => $id])->row();
-    }
+	public function getById($id) {
+		return $this ->db ->get_where($this -> table, ["id_pemesanan"=> $id]) ->row();
+	}
 
-    public function getDetail($id) {
-        $this->db->select('*');
-        $this->db->select('p.*, t.*, k.nama AS nama_kereta, g.no_gerbong, pen.nama');
-        $this->db->from('pemesanan p');
-        $this->db->join('tiket t', 'p.id_tiket = t.id_tiket', 'left');
-        $this->db->join('kereta k', 't.id_kereta = k.id_kereta', 'left'); 
-        $this->db->join('gerbong g', 'p.id_gerbong = g.id_gerbong', 'left');
-        $this->db->join('penumpang pen', 'p.id_penumpang = pen.id_penumpang', 'left');
-        $this->db->where('p.id_pemesanan', $id);
-        return $this->db->get()->row();
-    }
-    
-    public function insert($data) {
-        $this->db->insert('pemesanan', $data);
-        return $this->db->insert_id();
-    }
-    
-    public function insertPenumpang($data) {
-        $this->db->insert('penumpang', $data);
-        return $this->db->insert_id();
-    }    
-    
-    public function updatePenumpangPemesanan($id_pemesanan, $id_penumpang) {
-         // Tidak digunakan karena tidak ada tabel relasi
-    }    
+	public function getDetail($id) {
+		$this ->db ->select('*');
+		$this ->db ->select('p.*, t.*, k.nama AS nama_kereta, g.no_gerbong, pen.nama');
+		$this ->db ->from('pemesanan p');
+		$this ->db ->join('tiket t', 'p.id_tiket = t.id_tiket', 'left');
+		$this ->db ->join('kereta k', 't.id_kereta = k.id_kereta', 'left');
+		$this ->db ->join('gerbong g', 'p.id_gerbong = g.id_gerbong', 'left');
+		$this ->db ->join('penumpang pen', 'p.id_penumpang = pen.id_penumpang', 'left');
+		$this ->db ->where('p.id_pemesanan', $id);
+		return $this ->db ->get() ->row();
+	}
 
-    public function update($id, $data) {
-        $this->db->where("id_pemesanan", $id);
-        return $this->db->update($this->table, $data);
-    }
+	public function insert($data) {
+		$this ->db ->insert('pemesanan', $data);
+		return $this ->db ->insert_id();
+	}
 
-    public function delete($id) {
-        return $this->db->delete($this->table, ["id_pemesanan" => $id]);
-    }
+	public function insertPenumpang($data) {
+		$this ->db ->insert('penumpang', $data);
+		return $this ->db ->insert_id();
+	}
+
+	public function updatePenumpangPemesanan($id_pemesanan, $id_penumpang) {
+		// Tidak digunakan karena tidak ada tabel relasi
+	}
+
+	public function update($id, $data) {
+		$this ->db ->where("id_pemesanan", $id);
+		return $this ->db ->update($this -> table, $data);
+	}
+
+	public function delete($id) {
+		return $this ->db ->delete($this -> table, ["id_pemesanan"=> $id]);
+	}
+
+	public function getLaporan(){
+		$this->db->select('p.*, pen.nama as nama_penumpang, 
+			DATE(CONCAT(
+				SUBSTRING(p.kode_tiket, 1, 4), "-", 
+				SUBSTRING(p.kode_tiket, 5, 2), "-", 
+				SUBSTRING(p.kode_tiket, 7, 2)
+			)) as tanggal_pemesanan');
+		$this->db->from('pemesanan p');
+		$this->db->join('penumpang pen', 'pen.id_penumpang = p.id_penumpang', 'left');
+		$this->db->order_by('tanggal_pemesanan', 'DESC');
+		return $this->db->get()->result();
+	}
+	
 }

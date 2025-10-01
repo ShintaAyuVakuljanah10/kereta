@@ -52,3 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'auth/login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['laporan_pemesanan'] = 'laporan_pemesanan/index';
+$route['laporan_pemesanan/detail/(:num)'] = 'laporan_pemesanan/detail/$1';
+$route['laporan_pemesanan/export_pdf'] = 'laporan_pemesanan/export_pdf';
+$route['laporan_pemesanan/export_excel'] = 'laporan_pemesanan/export_excel';
